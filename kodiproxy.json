@@ -1,0 +1,12 @@
+{
+  "server": {
+    "host": "",
+    "port": 8080,
+    "target": "http://localhost:8081/jsonrpc"
+  },
+  "logging": {
+    "enabled": true,
+    "level": "INFO",
+    "path": "kodiproxy.log"
+  }
+}

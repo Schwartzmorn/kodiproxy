@@ -1,0 +1,7 @@
+<service-group>
+  <name replace-wildcards="yes">%(hostname) KodiProxy</name>
+  <service>
+    <type>_xbmc-jsonrpc-h._tcp</type>
+    <port>%(port)s</port>
+  </service>
+</service-group>
