@@ -6,12 +6,14 @@ from urllib import parse
 
 LOGGER = logging.getLogger('kodiproxy')
 
+
 class KodiProxyServer:
     def __init__(self, conf):
         jrpc_handler = JRPCHandler(conf.target)
         KodiProxyHandler._JRPC_HANDLER = jrpc_handler
         LOGGER.info('Creating server %s:%d', conf.host, conf.port)
-        self.httpd = http.server.HTTPServer((conf.host, conf.port), KodiProxyHandler)
+        self.httpd = http.server.HTTPServer(
+            (conf.host, conf.port), KodiProxyHandler)
 
     def serve(self):
         LOGGER.info('Starting server...')
@@ -22,9 +24,14 @@ class KodiProxyServer:
         LOGGER.info('Stopping server')
         self.httpd.server_close()
 
+
 class KodiProxyHandler(http.server.BaseHTTPRequestHandler):
     _JRPC_PATH = '/jsonrpc'
     _JRPC_HANDLER = None
+
+    def __init__(self, *args):
+        print('prout')
+        http.server.BaseHTTPRequestHandler.__init__(self, *args)
 
     def answer_error(self, code, message):
         self.send_response(code)
@@ -37,7 +44,8 @@ class KodiProxyHandler(http.server.BaseHTTPRequestHandler):
 
     def dispatch_jrpc(self, request):
         headers = dict((k, v) for k, v in self.headers.items())
-        code, payload, headers = KodiProxyHandler._JRPC_HANDLER.dispatch(headers, request)
+        code, payload, headers = KodiProxyHandler._JRPC_HANDLER.dispatch(
+            headers, request)
         try:
             self.send_response(code)
             for k, v in headers.items():
@@ -73,4 +81,3 @@ class KodiProxyHandler(http.server.BaseHTTPRequestHandler):
     def do_HEAD(self):
         # TODO nice to have
         LOGGER.warning('HEAD')
-

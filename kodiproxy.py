@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from kp.configuration import KPConfiguration
-from kp.logging import config_logger
+from kp.log import config_logger
 from kp.server import KodiProxyServer
 
 if __name__ == '__main__':
