@@ -1,19 +1,19 @@
 {
   "jrpc": {
-    "target": "http://localhost:8081/jsonrpc"
+    "target": "http://localhost:43211/jsonrpc"
   },
   "logging": {
     "enabled": true,
     "level": "DEBUG",
-    "path": "kodiproxy.log",
-    "type": "stdout"
+    "type": "null"
   },
   "receiver": {
     "desiredInput": "AUXB",
-    "ip": "192.168.1.13"
+    "ip": "localhost",
+    "port": 43212
   },
   "server": {
     "host": "",
-    "port": 8080
+    "port": 43210
   }
 }

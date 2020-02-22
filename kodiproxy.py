@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 
-from kp.configuration import KPConfiguration
-from kp.log import config_logger
-from kp.server import KodiProxyServer
+import argparse
+from kp.main import setup_and_start
 
-if __name__ == '__main__':
-    # TODO add path
-    conf = KPConfiguration()
-    config_logger(conf.logging)
-    server = KodiProxyServer(conf.server)
-    server.serve()
+parser = argparse.ArgumentParser(
+    prog='Kodi Proxy',
+    description='Starts a proxy that forwards most jrpc requests to a Kodi server but overrides some of them.')
+parser.add_argument('-c', '--conf', default='kodiproxy.json',
+                    help='configuration file to override the default one')
+args = parser.parse_args()
+setup_and_start(args.conf)

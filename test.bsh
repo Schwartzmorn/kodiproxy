@@ -1,0 +1,18 @@
+#!/bin/bash
+
+#CUR_PATH=$(dirname $(realpath $0))
+#PYTHONPATH=$CUR_PATH:PYTHONPATH
+
+python3 -m unittest discover -v kp "*_test.py"
+
+if [[ $? -ne 0 ]]; then
+    echo 'Unit tests failed'
+    \exit 1
+fi
+
+python3 regression_main.py
+
+if [[ $? -ne 0 ]]; then
+    echo 'Regression tests failed'
+    \exit 1
+fi
