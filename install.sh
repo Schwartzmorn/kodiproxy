@@ -3,6 +3,7 @@
 LIB_PATH="/usr/lib/kodiproxy"
 CUR_DIR=$(dirname $(realpath $0))
 
+# Ensure the user kp that is used to run the proxy exists
 function create_user() {
     id -u kp > /dev/null 2>&1
     if [[ $? -ne 0 ]]; then
@@ -13,6 +14,7 @@ function create_user() {
     fi
 }
 
+# Copies the useful files to where they're needed
 function rsync_lib() {
     echo "Copying files"
     sudo rsync -am --delete --filter='merge resources/rsync_filter.txt' $1/ $2
@@ -20,6 +22,7 @@ function rsync_lib() {
     sudo chown -R kp:kp $LIB_PATH
 }
 
+# Gather some information from the user
 function get_settings() {
     local lastInstall=$CUR_DIR/install.last
     local user_input
@@ -65,6 +68,7 @@ function get_settings() {
     printf "PORT=$PORT\nRECEIVER_IP=$RECEIVER_IP\nJRPC_TARGET=$JRPC_TARGET\n" > $lastInstall
 }
 
+# Copies a file where it's needed, doing some substitutions first
 function copy_settings_file() {
     cat "$1" | \
             sed "s;%JRPC_TARGET%;$JRPC_TARGET;g" | \
@@ -73,12 +77,14 @@ function copy_settings_file() {
             sudo tee "$2" > /dev/null
 }
 
+# Install and reload the avahi service so it broadcasts its presence
 function install_avahi_service() {
     echo 'Installing avahi service'
     copy_settings_file "$CUR_DIR/resources/kodiproxy.avahi.service" "/etc/avahi/services/kodiproxy.service"
     sudo systemctl daemon-reload
 }
 
+# Creates and starts the service so it's run in the background and started automatically
 function install_systemd_service() {
     echo 'Installing systemd service'
     local service="kodiproxy.service"
@@ -100,6 +106,7 @@ function install_systemd_service() {
     sudo systemctl start $service
 }
 
+# Do all the stuff
 create_user
 get_settings
 rsync_lib $CUR_DIR $LIB_PATH

@@ -11,17 +11,3 @@ class PowerCase(RegressionCase):
         self.assertPayloadEqual(res, {
             'canshutdown': False, 'cansuspend': False, 'canhibernate': False, 'canreboot': True
         })
-
-    def test_suspend(self):
-        """Check that nothing happens"""
-        code, res = self.open_jrpc('System.Suspend', None)
-
-        self.assertEqual(code, 200)
-        self.assertPayloadEqual(res, 'OK')
-
-    def test_quit(self):
-        """Check that the receiver and the projector are switched off"""
-        code, res = self.open_jrpc('Application.Quit', None)
-        # TODO
-        self.assertEqual(code, 200)
-        self.assertPayloadEqual(res, 'OK')

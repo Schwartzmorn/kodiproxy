@@ -1,15 +1,8 @@
-from kp.jrpc.jrpcserver import JRPCOverloader, JRPCOverloaderWithHandler
 from kp.avreceiver import AVReceiver
+from kp.cecclient import CECClient
+from kp.jrpc.jrpcserver import JRPCOverloader, JRPCOverloaderWithHandler
 from kp.jrpc.volumeoverloaders import JRPCAVReceiverOverloader
 from kp.types import Response
-
-
-class SuspendOverloader(JRPCOverloader):
-    """Class to intercept queries to shut down Kodi"""
-
-    def overload_query(self, params) -> Response:
-        """Does nothing, we are not able to recover from the pi shutting down"""
-        return 200, 'OK', None
 
 
 class SystemPropertiesOverloader(JRPCOverloader):
@@ -27,8 +20,9 @@ class ApplicationQuitOverloader(JRPCAVReceiverOverloader):
 
     def __init__(self, receiver: AVReceiver):
         super().__init__(None, receiver)
+        self.cecclient = CECClient()
 
     def overload_query(self, params) -> Response:
-        # ask for the receiver to shut down
-        # TODO
+        self.receiver.set_power(False)
+        self.cecclient.switch_off()
         return 200, 'OK', None
