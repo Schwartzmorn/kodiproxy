@@ -1,0 +1,12 @@
+# systemd daemon to run kodi proxy
+[Unit]
+Description=Kodiproxy service
+
+[Service]
+User=kp
+ExecStart=python3 /usr/lib/kodiproxy/kodiproxy.py
+ExecStop=curl 'http://localhost:%PORT%/quit'
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

@@ -15,27 +15,27 @@ LOGGER = logging.getLogger('kodiproxy')
 class JRPCOverloader(metaclass=ABCMeta):
     """Base class of the JRPC overloaders"""
 
-    def handle_query(self, payload: dict) -> Response:
-        self.id = payload.get('id', None)
+    def handle_query(self, query: dict) -> Response:
+        self.id = query.get('id', None)
         code, payload, headers = self.overload_query(
-            payload.get('params', None))
-        payload, headers = self._enrich_http({'result': payload}, headers)
-        return code, payload, headers
+            query.get('params', None))
+        response, headers = self._enrich_http({'result': payload}, headers)
+        return code, response, headers
 
     def _enrich_http(self, payload: dict, headers: Headers = None) -> Tuple[bytes, Headers]:
         headers = headers or dict()
-        payload = {
+        response = {
             'jsonrpc': '2.0',
             'id': self.id
         }
-        payload.update(payload)
-        payload = bytes(json.dumps(payload), 'utf-8')
-        headers['content-length'] = str(len(payload))
+        response.update(payload)
+        response = bytes(json.dumps(response), 'utf-8')
+        headers['content-length'] = str(len(response))
         headers['content-type'] = 'application/json; charset=utf-8'
-        return payload, headers
+        return response, headers
 
     @abstractmethod
-    def overload_query(self, params: Any) -> Response:
+    def overload_query(self, params: Any) -> Tuple[int, Any, Headers]:
         pass
 
 

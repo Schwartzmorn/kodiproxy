@@ -1,0 +1,8 @@
+<!-- Avahi service to broadcast service -->
+<service-group>
+  <name replace-wildcards="yes">BDQFTL KodiProxy</name>
+  <service>
+    <type>_xbmc-jsonrpc-h._tcp</type>
+    <port>%PORT%</port>
+  </service>
+</service-group>

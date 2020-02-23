@@ -1,0 +1,8 @@
+- test
+- regression
+- .git
+- __pycache__
+- regression_main.py
++ *.py
++ */
+- *

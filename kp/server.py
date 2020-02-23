@@ -4,6 +4,7 @@ from kp.jrpc.jrpcserver import JRPCServer
 import logging
 import socketserver
 from socket import timeout
+import sys
 import traceback
 from urllib import parse
 
@@ -53,7 +54,10 @@ class KodiProxyServer:
             def do_GET(self) -> None:
                 (_, _, path, _, query, _) = parse.urlparse(self.path)
                 LOGGER.info('Received GET %s', path)
-                if path != self.jrpc_path:
+                if path == '/quit':
+                    self.send_error(204)
+                    self.server.shutdown()
+                elif path != self.jrpc_path:
                     self.send_error(404)
                 else:
                     params = parse.parse_qs(query)
@@ -95,7 +99,11 @@ class KodiProxyServer:
         LOGGER.info('Starting server...')
         try:
             self.httpd.serve_forever(poll_interval=0.05)
+        except SystemExit:
+            LOGGER.info('Sys.exit was called !')
+            pass
         except KeyboardInterrupt:
+            LOGGER.info('Stopped by user')
             pass
         LOGGER.info('Stopping server')
         self.httpd.server_close()

@@ -6,6 +6,7 @@ from typing import Any, Tuple
 
 
 class RegressionCase(unittest.TestCase):
+    """Helper class to more easily handle the http mocks"""
     JRPC_MOCK = None
     RECEIVER_MOCK = None
 
@@ -18,17 +19,18 @@ class RegressionCase(unittest.TestCase):
         self.jrpc_mock.reset_mocks()
         self.receiver_mock.reset_mocks()
 
-    def assertPayloadEqual(self, response, expected: Any):
-        expected = {
+    def assertPayloadEqual(self, response, expected_result: Any):
+        """Compares what we received to what we expect, giving only the expected result part"""
+        expected_response = {
             'jsonrpc': '2.0',
             'id': 321,
-            'result': expected
+            'result': expected_result
         }
-        self.assertEqual(response, response)
+        self.assertEqual(response, expected_response)
 
     def open_jrpc(self, method: str, params: dict) -> Tuple[int, dict]:
-        """Helper function to send jrpc query to the proxy"""
-        payload = {
+        """Helper function to send jrpc query to the proxy giving ornly the params and method"""
+        query = {
             'jsonrpc': '2.0',
             'id': 321,
             'method': method,
@@ -37,13 +39,13 @@ class RegressionCase(unittest.TestCase):
 
         headers = {'Content-Type': 'application/json'}
         req = request.Request('http://localhost:43210/jsonrpc',
-                              data=bytes(json.dumps(payload), 'utf-8'), headers=headers)
+                              data=bytes(json.dumps(query), 'utf-8'), headers=headers)
         try:
             res = request.urlopen(req)
             code = res.getcode()
-            payload = json.load(res)
+            response = json.load(res)
         except error.HTTPError as e:
             code = e.getcode()
-            payload = None
+            response = None
 
-        return code, payload
+        return code, response

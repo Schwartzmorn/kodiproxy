@@ -61,7 +61,6 @@ class VolumeCase(RegressionCase):
 
         self.assertEqual(code, 200)
         self.assertPayloadEqual(payload, {'muted': True, 'volume': 75})
-
         self.assertEqual(len(self.jrpc_mock.queries), 0)
 
     def test_get_properties_other(self):
@@ -74,5 +73,4 @@ class VolumeCase(RegressionCase):
 
         self.assertEqual(code, 200)
         self.assertPayloadEqual(payload, {'prop1': "value", 'prop2': 34})
-
         self.assertEqual(len(self.receiver_mock.queries), 0)

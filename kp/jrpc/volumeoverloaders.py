@@ -1,6 +1,7 @@
 import json
 from kp.avreceiver import AVReceiver
 from kp.jrpc.jrpcserver import JRPCOverloader, JRPCServer, JRPCOverloaderWithHandler
+from kp.types import Response
 import numbers
 
 
@@ -14,7 +15,7 @@ class SetVolumeOverloader(JRPCAVReceiverOverloader):
     def __init__(self, receiver: AVReceiver):
         super().__init__(None, receiver)
 
-    def overload_query(self, params):
+    def overload_query(self, params) -> Response:
         volume = params['volume']
         if isinstance(volume, numbers.Number):
             volume = self.receiver.set_volume(params['volume'])
@@ -31,7 +32,7 @@ class SetMuteOverloader(JRPCAVReceiverOverloader):
     def __init__(self, receiver: AVReceiver):
         super().__init__(None, receiver)
 
-    def overload_query(self, params):
+    def overload_query(self, params) -> Response:
         mute = params['mute']
         if mute == 'toggle':
             mute = not self.receiver.get_mute()
@@ -47,24 +48,24 @@ class GetPropertiesOverloader(JRPCAVReceiverOverloader):
     def __init__(self, server: JRPCServer, receiver: AVReceiver):
         super().__init__(server, receiver)
 
-    def overload_query(self, params):
-        params = set(params['properties'])
+    def overload_query(self, params) -> Response:
+        properties = set(params['properties'])
         avr_properties = GetPropertiesOverloader._AVR_PROPERTIES.intersection(
-            params)
-        other_properties = params - GetPropertiesOverloader._AVR_PROPERTIES
-        res = dict()
+            properties)
+        other_properties = properties - GetPropertiesOverloader._AVR_PROPERTIES
+        result = dict()
         if avr_properties:
             volume, muted = self.receiver.get_volume()
             for prop in avr_properties:
                 if prop == 'muted':
-                    res[prop] = muted
+                    result[prop] = muted
                 elif prop == 'volume':
-                    res[prop] = volume
+                    result[prop] = volume
         if other_properties:
-            _, payload, _ = self.forward('Application.GetProperties', {
+            _, response, _ = self.forward('Application.GetProperties', {
                 'properties': list(other_properties)})
 
-            payload = json.loads(payload)
-            res.update(payload['result'])
+            response = json.loads(response)
+            result.update(response['result'])
 
-        return 200, res, None
+        return 200, result, None
